@@ -3,12 +3,18 @@
     public class Node<T>
     {
         private T _value;
-        private Node<T> _next;
+        private Node<T>? _next;
         public T Value { get { return _value; } }
         public Node(T value) 
         {
             _value = value;
             _next = this;
+        }
+
+        public Node<T> Next
+        {
+            get { return _next ?? this; }
+            private set { _next = value; }
         }
 
         public override string? ToString()
@@ -21,17 +27,11 @@
             return _value.ToString();
         }
 
-        public Node<T> Next
-        {
-            get { return _next; }
-            private set { _next = value; }
-        }
-
         public Node<T> Append(T value)
         {
             if (Exists(value)) 
             {
-                throw new ArgumentException("Dupelicate Value");
+                throw new ArgumentException("Duplicate Value");
             }
             Node<T> toAdd = new(value);
             toAdd.Next = Next;
@@ -42,6 +42,8 @@
         /*
          * With all "deleted" nodes pointing to themselves, after the Clear()
          * method is ran these nodes will no longer be accessable via the linked list.
+         * 
+         * IE nothing is pointing at the "cleared" nodes, making garbage collection a non-issue.
          */
         public void Clear()
         {
@@ -62,8 +64,12 @@
 
             do
             {
-                if (node.Value is null && value is null)
-                { 
+                if (node.Value is null && value is not null)
+                {
+                    node = node.Next;
+                }
+                else if (node.Value is null && value is null)
+                {
                     return true;
                 }
                 else if (node.Value!.Equals(value))

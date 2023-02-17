@@ -19,7 +19,7 @@ namespace GenericsHomework.Tests
 
             // Assert
 
-            Assert.AreEqual(testVal, testNode.Value);
+            Assert.AreEqual<int>(testVal, testNode.Value);
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace GenericsHomework.Tests
 
             // Assert
 
-            Assert.AreEqual(testVal.ToString(), testNode.ToString());
+            Assert.AreEqual<string>(testVal.ToString(), testNode.ToString()!);
         }
 
         [TestMethod]
@@ -51,7 +51,7 @@ namespace GenericsHomework.Tests
 
             // Assert
 
-            Assert.AreEqual(testVal.ToString(), testNode.ToString());
+            Assert.AreEqual<string>(testVal.ToString(), testNode.ToString()!);
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace GenericsHomework.Tests
 
             // Assert
 
-            Assert.AreEqual(testVal.ToString(), testNode.ToString());
+            Assert.AreEqual<string>(testVal, testNode.ToString()!);
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace GenericsHomework.Tests
 
             // Assert
 
-            Assert.AreEqual(testNode, testNode.Next);
+            Assert.AreEqual<Node<int>>(testNode, testNode.Next);
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace GenericsHomework.Tests
 
             // Assert
 
-            Assert.AreEqual(testNode.Next, testNode2);
+            Assert.AreEqual<Node<int>>(testNode.Next, testNode2);
         }
 
         [TestMethod]
@@ -126,7 +126,7 @@ namespace GenericsHomework.Tests
         }
 
         [TestMethod]
-        public void Node_Exists_NoDupe()
+        public void Node_Exists_NonDuplicate()
         {
             // Arrange
 
@@ -167,7 +167,7 @@ namespace GenericsHomework.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException), "Dupelicate Value")]
+        [ExpectedException(typeof(ArgumentException), "Duplicate Value")]
         public void Node_AppendDupe_ThrowException()
         {
             // Arrange
