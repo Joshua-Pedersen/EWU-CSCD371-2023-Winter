@@ -37,26 +37,10 @@
             return validity;
         }
 
-        private static double Add(int x, int y)
-        {
-            return x + y;
-        }
-
-        private static double Subtract(int x, int y)
-        {
-            return x - y;
-        }
-
-        private static double Multiply(int x, int y)
-        {
-            return x * y;
-        }
-
-        private static double Divide(int x, int y)
-        {
-            return (double)x / y;
-        }
-
+        public static Func<int, int, double> Add { get; set; } = (v1, v2) => v1 + v2;
+        public static Func<int, int, double> Subtract { get; set; } = (v1, v2) => v1 - v2;
+        public static Func<int, int, double> Multiply { get; set; } = (v1, v2) => v1 * v2;
+        public static Func<int, int, double> Divide { get; set; } = (v1, v2) => v1 / v2;
         
     }
 }

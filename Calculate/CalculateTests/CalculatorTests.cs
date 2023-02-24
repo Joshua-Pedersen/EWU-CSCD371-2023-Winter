@@ -34,12 +34,13 @@ namespace CalculateTests
             var stringReader = new StringReader("42 + 1");
             Console.SetIn(stringReader);
             double result = default;
+
             // Act
 
             calc.TryCalculate(prog.ReadLine()!, out result);
 
             // Assert
-            Assert.AreEqual<double>(43, result);
+            Assert.AreEqual(43, result);
         }
 
         [TestMethod]
@@ -52,12 +53,13 @@ namespace CalculateTests
             var stringReader = new StringReader("42 - 1");
             Console.SetIn(stringReader);
             double result = default;
+
             // Act
 
             calc.TryCalculate(prog.ReadLine()!, out result);
 
             // Assert
-            Assert.AreEqual<double>(41, result);
+            Assert.AreEqual(41, result);
         }
 
         [TestMethod]
@@ -70,12 +72,13 @@ namespace CalculateTests
             var stringReader = new StringReader("42 * 2");
             Console.SetIn(stringReader);
             double result = default;
+
             // Act
 
             calc.TryCalculate(prog.ReadLine()!, out result);
 
             // Assert
-            Assert.AreEqual<double>(84, result);
+            Assert.AreEqual(84, result);
         }
 
         [TestMethod]
@@ -88,12 +91,31 @@ namespace CalculateTests
             var stringReader = new StringReader("42 / 2");
             Console.SetIn(stringReader);
             double result = default;
+
             // Act
 
             calc.TryCalculate(prog.ReadLine()!, out result);
 
             // Assert
-            Assert.AreEqual<double>(21, result);
+            Assert.AreEqual(21, result);
+        }
+
+        [TestMethod]
+        public void Calculator_TryCalculateNoWhiteSpace_Invalid()
+        {
+            // Arrange
+
+            Calculator calc = new();
+            Program prog = new();
+            double result = default;
+
+            // Act
+
+            var stringReader = new StringReader("5*1");
+            Console.SetIn(stringReader);
+
+            // Assert
+            Assert.IsFalse(calc.TryCalculate(prog.ReadLine()!, out result));
         }
     }
 }

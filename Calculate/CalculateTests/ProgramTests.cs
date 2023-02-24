@@ -22,7 +22,7 @@ namespace CalculateTests
 
             //Assert
 
-            Assert.AreEqual<string>(testMessage, captured.ToString().Trim());
+            Assert.AreEqual(testMessage, captured.ToString().Trim());
 
         }
 
@@ -42,7 +42,7 @@ namespace CalculateTests
 
             // Assert
             Assert.IsNotNull(returned);
-            Assert.AreEqual<string>(testMessage, returned);
+            Assert.AreEqual(testMessage, returned);
             
         }
     }
