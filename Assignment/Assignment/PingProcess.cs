@@ -27,32 +27,49 @@ public class PingProcess
 
     public Task<PingResult> RunTaskAsync(string hostNameOrAddress)
     {
-        throw new NotImplementedException();
+        if(hostNameOrAddress == null || hostNameOrAddress == "")
+        {
+            throw new ArgumentNullException("Null hostNameOrAddress");
+        }
+
+        Task<PingResult> task = Task.Run(() => Run(hostNameOrAddress));
+        return task;
     }
 
     async public Task<PingResult> RunAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
-        Task task = null!;
-        await task;
-        throw new NotImplementedException();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (hostNameOrAddress == null || hostNameOrAddress == "")
+        {
+            throw new ArgumentNullException("Null hostNameOrAddress");
+        }
+
+        Task<PingResult> task = Task.Run(() => Run(hostNameOrAddress), cancellationToken);
+        return await task;
     }
 
     async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
     {
         StringBuilder? stringBuilder = null;
-        ParallelQuery<Task<int>>? all = hostNameOrAddresses.AsParallel().Select(async item =>
+        object lockable = new object();
+        ParallelQuery<Task<int>> all = hostNameOrAddresses.AsParallel().Select(async item =>
         {
-            Task<PingResult> task = null!;
-            // ...
+            PingResult result = await RunAsync(item);
+            lock (lockable)
+            {
+                stringBuilder = new StringBuilder();
+            }
 
-            await task.WaitAsync(default(CancellationToken));
-            return task.Result.ExitCode;
+            stringBuilder.Append(result.StdOutput);
+
+            return result.ExitCode;
         });
 
-        await Task.WhenAll(all);
-        int total = all.Aggregate(0, (total, item) => total + item.Result);
-        return new PingResult(total, stringBuilder?.ToString());
+        int[] resultCodes =  await Task.WhenAll(all);
+
+        return new PingResult(resultCodes.Sum(), stringBuilder?.ToString());
     }
 
     async public Task<PingResult> RunLongRunningAsync(

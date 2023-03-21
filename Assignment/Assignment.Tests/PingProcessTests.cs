@@ -1,8 +1,10 @@
 ﻿using IntelliTect.TestTools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Assignment.Tests;
@@ -57,66 +59,122 @@ public class PingProcessTests
     [TestMethod]
     public void RunTaskAsync_Success()
     {
-        // Do NOT use async/await in this test.
-        // Test Sut.RunTaskAsync("localhost");
+        // Arrange
+
+        Task<PingResult> returned;
+
+        // Act
+
+        returned = Sut.RunTaskAsync("localhost");
+
+        // Assert
+
+        AssertValidPingOutput(returned.Result);
     }
 
     [TestMethod]
     public void RunAsync_UsingTaskReturn_Success()
     {
-        // Do NOT use async/await in this test.
-        PingResult result = default;
-        // Test Sut.RunAsync("localhost");
-        AssertValidPingOutput(result);
+        // Arrange
+
+        Task<PingResult> returned;
+
+        // Act
+
+        returned = Sut.RunAsync("localhost");
+
+        // Assert
+
+        AssertValidPingOutput(returned.Result);
     }
 
     [TestMethod]
-#pragma warning disable CS1998 // Remove this
     async public Task RunAsync_UsingTpl_Success()
     {
-        // DO use async/await in this test.
-        PingResult result = default;
+        // Arrange
 
-        // Test Sut.RunAsync("localhost");
-        AssertValidPingOutput(result);
+        PingResult returned = await
+
+        // Act
+
+        Sut.RunAsync("localhost");
+
+        // Assert
+
+        AssertValidPingOutput(returned);
     }
-#pragma warning restore CS1998 // Remove this
 
 
     [TestMethod]
     [ExpectedException(typeof(AggregateException))]
     public void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrapping()
     {
-        
+        // Arrange
+
+        CancellationTokenSource cts = new CancellationTokenSource();
+
+        // Act
+
+        Task<PingResult> task = Sut.RunAsync("localhost", cts.Token);
+        cts.Cancel();
+        task.Wait();
+
+        // Assert
     }
 
     [TestMethod]
     [ExpectedException(typeof(TaskCanceledException))]
     public void RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrappingTaskCanceledException()
     {
-        // Use exception.Flatten()
+        // Arrage
+
+        // Act
+
+        try
+        {
+            RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrapping();
+        } catch (AggregateException ex)
+        {
+            throw ex.Flatten().InnerException!;
+        }
+
+        // Assert
     }
 
     [TestMethod]
     async public Task RunAsync_MultipleHostAddresses_True()
     {
-        // Pseudo Code - don't trust it!!!
+        // Arrange
+
         string[] hostNames = new string[] { "localhost", "localhost", "localhost", "localhost" };
-        int expectedLineCount = PingOutputLikeExpression.Split(Environment.NewLine).Length*hostNames.Length;
-        PingResult result = await Sut.RunAsync(hostNames);
-        int? lineCount = result.StdOutput?.Split(Environment.NewLine).Length;
+        int? expectedLineCount = PingOutputLikeExpression.Split(Environment.NewLine).Length + hostNames.Length - 1;
+        
+        // Act
+
+        PingResult results = await Sut.RunAsync(hostNames);
+        int? lineCount = results.StdOutput?.Split(Environment.NewLine).Length;
+        
+        // Assert
+
         Assert.AreEqual(expectedLineCount, lineCount);
     }
 
     [TestMethod]
-#pragma warning disable CS1998 // Remove this
     async public Task RunLongRunningAsync_UsingTpl_Success()
     {
+        // Arrange
+
         PingResult result = default;
-        // Test Sut.RunLongRunningAsync("localhost");
+
+        // Act
+
+        result = await
+        Sut.RunLongRunningAsync("localhost");
+        
+        // Assert
+
         AssertValidPingOutput(result);
     }
-#pragma warning restore CS1998 // Remove this
 
     [TestMethod]
     public void StringBuilderAppendLine_InParallel_IsNotThreadSafe()
@@ -149,4 +207,17 @@ Approximate round trip times in milli-seconds:
     }
     private void AssertValidPingOutput(PingResult result) =>
         AssertValidPingOutput(result.ExitCode, result.StdOutput);
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void RunTaskAsync_NullParam_Exception()
+    {
+        // Arrange
+
+        // Act
+
+        Sut.RunTaskAsync("");
+
+        // Assert
+    }
 }
