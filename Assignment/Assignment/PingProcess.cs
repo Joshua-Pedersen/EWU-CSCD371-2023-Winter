@@ -50,7 +50,7 @@ public class PingProcess
         return await task;
     }
 
-    async public Task<PingResult> RunAsync(params string[] hostNameOrAddresses)
+    async public Task<PingResult> RunAsync(IEnumerable <string> hostNameOrAddresses, CancellationToken cancellationToken = default)
     {
         StringBuilder? stringBuilder = null;
         object lockable = new object();
@@ -75,9 +75,7 @@ public class PingProcess
     async public Task<PingResult> RunLongRunningAsync(
         string hostNameOrAddress, CancellationToken cancellationToken = default)
     {
-        Task task = null!;
-        await task;
-        throw new NotImplementedException();
+        return await RunAsync(hostNameOrAddress, cancellationToken);
     }
 
     private Process RunProcessInternal(
