@@ -135,7 +135,8 @@ public class PingProcessTests
             RunAsync_UsingTplWithCancellation_CatchAggregateExceptionWrapping();
         } catch (AggregateException ex)
         {
-            throw ex.Flatten().InnerException!;
+            Exception taskCanceledException = ex.Flatten();
+            throw taskCanceledException.InnerException!;
         }
 
         // Assert
